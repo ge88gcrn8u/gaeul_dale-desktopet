@@ -1,5 +1,8 @@
 # 🐿️ DAL-E · 秋天的小松鼠 — macOS Desktop Pet
 
+[![GitHub Release](https://img.shields.io/github/v/release/ge88gcrn8u/gaeul_dale-desktopet?label=Download&color=orange)](https://github.com/ge88gcrn8u/gaeul_dale-desktopet/releases/latest)
+[![macOS](https://img.shields.io/badge/macOS-12%2B-blue)]()
+
 > 灵感来自 **IVE 金秋天（GAEUL）** 的官方角色「**DAL-E**」——一只戴着橡果项链的 Q 版松鼠。
 > 本项目是粉丝自制的桌面宠物，**非官方周边**。
 
