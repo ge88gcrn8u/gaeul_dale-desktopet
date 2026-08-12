@@ -1,4 +1,4 @@
-# 🐿️ DAL-E · 秋天的小松鼠 — macOS Desktop Pet
+# 🐿️ DAL-E ·  — macOS Desktop Pet
 
 [![GitHub Release](https://img.shields.io/github/v/release/ge88gcrn8u/gaeul_dale-desktopet?label=Download&color=orange)](https://github.com/ge88gcrn8u/gaeul_dale-desktopet/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-12%2B-blue)]()
