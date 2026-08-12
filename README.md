@@ -150,7 +150,7 @@ SquirrelPet/
 
 ### 替换精灵图
 
-想把 DAL-E 换成自己的松鼠图（PNG），直接替换项目根目录的 `squirrel.png` 即可；
+想把 DAL-E 换成自己的图片（PNG），直接替换项目根目录的 `squirrel.png` 即可；
 `SquirrelNode.swift` 会自动从 bundle / 可执行文件目录加载它。也可以用序列帧：
 
 ```swift
