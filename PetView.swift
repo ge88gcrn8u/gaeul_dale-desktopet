@@ -93,11 +93,12 @@ class PetView: SKView, SKSceneDelegate {
     // MARK: - Reminder wake / calm
 
     private func wakeForReminder() {
-        window?.orderFrontRegardless()
+        (window as? PetWindow)?.raiseForReminder()
         animManager.startReminderJump()
     }
 
     private func calmReminder() {
+        (window as? PetWindow)?.restoreLevel()
         animManager.stopReminderJump()
     }
 
