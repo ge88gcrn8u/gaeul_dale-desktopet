@@ -33,6 +33,16 @@ class PetView: SKView, SKSceneDelegate {
     private let renderStallThreshold: TimeInterval = 5.0
     private let rebuildCooldown: TimeInterval = 30.0
 
+    /// True after a scene-only rebuild happened but no frame was rendered yet.
+    /// When the light-weight scene rebuild fails to recover (the SKView's Metal
+    /// drawable pool is gone after display sleep), escalate to recreating the
+    /// whole SKView — re-presenting scenes on the same dead view cannot help.
+    private var sceneRebuiltSinceLastFrame = false
+
+    /// Fatal-stall escalation hook: PetWindow swaps in a brand-new PetView
+    /// (fresh SKView → fresh CVDisplayLink / Metal drawables).
+    var onFatalStall: (() -> Void)?
+
     override init(frame: NSRect) {
         super.init(frame: frame)
         allowsTransparency = true
@@ -132,6 +142,8 @@ class PetView: SKView, SKSceneDelegate {
     /// SKSceneDelegate — called by SpriteKit once per rendered frame.
     func update(_ currentTime: TimeInterval, for scene: SKScene) {
         lastRenderedTime = CACurrentMediaTime()
+        // Any rendered frame means the render loop is healthy again.
+        sceneRebuiltSinceLastFrame = false
         // Let the animation manager pause rendering for idle once this scene
         // has actually drawn its first frame (idempotent, cheap).
         animManager?.markFirstFrameRendered()
@@ -168,11 +180,23 @@ class PetView: SKView, SKSceneDelegate {
         let idle = now - lastRenderedTime
         guard idle > renderStallThreshold else { return }
 
+        // A scene-only rebuild already failed to restore rendering: the SKView's
+        // Metal drawable pool is dead, so presenting another scene on the same
+        // view will never draw. Recreate the SKView itself for a fresh renderer.
+        if sceneRebuiltSinceLastFrame {
+            guard now - lastRebuildTime > renderStallThreshold else { return }
+            PetView.log.error("🚨 Scene rebuild did not recover (no frame for \(idle, privacy: .public)s) — recreating SKView")
+            stopRenderWatchdog()
+            onFatalStall?()
+            return
+        }
+
         guard now - lastRebuildTime > rebuildCooldown else {
             PetView.log.error("🚨 SpriteKit still frozen (no frame for \(idle, privacy: .public)s) — retry later")
             return
         }
         lastRebuildTime = now
+        sceneRebuiltSinceLastFrame = true
         PetView.log.error("🚨 SpriteKit frozen — no frame for \(idle, privacy: .public)s — rebuilding scene")
         rebuildScene()
     }
@@ -268,6 +292,8 @@ class PetView: SKView, SKSceneDelegate {
     deinit {
         idleComfortWorkItem?.cancel()
         stopRenderWatchdog()
+        NotificationCenter.default.removeObserver(self)
+        NSWorkspace.shared.notificationCenter.removeObserver(self)
     }
 
     // MARK: - Hit testing

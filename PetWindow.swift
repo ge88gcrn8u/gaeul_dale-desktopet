@@ -45,10 +45,33 @@ class PetWindow: NSWindow {
 
     private func setupView() {
         guard let cv = contentView else { return }
-        petView = PetView(frame: cv.bounds)
-        petView.autoresizingMask = [.width, .height]
-        petView.wantsLayer = true
-        petView.layer?.backgroundColor = NSColor.clear.cgColor
-        cv.addSubview(petView)
+        let fresh = makePetView()
+        cv.addSubview(fresh)
+        petView = fresh
+    }
+
+    /// Builds a ready-to-add PetView. The fatal-stall hook lets SpriteKit's
+    /// renderer be rebuilt from scratch (fresh SKView) when the watchdog finds
+    /// a scene rebuild did not recover rendering after display sleep.
+    private func makePetView() -> PetView {
+        let v = PetView(frame: contentView?.bounds ?? .zero)
+        v.autoresizingMask = [.width, .height]
+        v.wantsLayer = true
+        v.layer?.backgroundColor = NSColor.clear.cgColor
+        v.onFatalStall = { [weak self] in self?.recreatePetView() }
+        return v
+    }
+
+    /// SpriteKit's Metal drawable pool can die permanently after display sleep
+    /// ("no drawables available"); re-presenting scenes on the same SKView
+    /// never recovers. Swap in a brand-new PetView so SpriteKit builds a fresh
+    /// renderer / CVDisplayLink, then re-attach the reminder callbacks.
+    func recreatePetView() {
+        petView?.removeFromSuperview()
+        petView = nil
+        guard let cv = contentView else { return }
+        let fresh = makePetView()
+        cv.addSubview(fresh)
+        petView = fresh
     }
 }
