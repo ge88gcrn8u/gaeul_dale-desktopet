@@ -49,6 +49,14 @@ class AnimationManager {
     //  ⚡ Idle — wall-clock scheduling, rendering paused in between
     // ═══════════════════════════════════════════
 
+    /// Cancels an in-flight idle animation (e.g. a blink) and hides the eyelid,
+    /// so bigger animations (reminder jump / comfort hug / pause) never overlap
+    /// it, and the `isIdleAnimating` flag can't get stuck.
+    private func cancelIdleAnimation() {
+        squirrel.resetLeftEyelid()
+        isIdleAnimating = false
+    }
+
     private func startIdleChains() {
         scheduleBlink()
         scheduleNudge()
@@ -110,17 +118,14 @@ class AnimationManager {
         guard !isPausedState, !isActionPlaying, !isReminderJumping, !isIdleAnimating else { scheduleBlink(); return }
         isIdleAnimating = true
         applyIdlePause()
-        squirrel.wholeNode.run(SKAction.sequence([
-            SKAction.scaleY(to: 0.85, duration: 0.06),
-            SKAction.wait(forDuration: 0.04),
-            SKAction.scaleY(to: 1.0,  duration: 0.08),
-            SKAction.run { [weak self] in
-                guard let self else { return }
-                self.isIdleAnimating = false
-                self.applyIdlePause()
-                self.scheduleBlink()
-            }
-        ]))
+        // Real left-eye blink via the fur-coloured eyelid overlay
+        // (previously this squashed the whole body, which was not a real blink).
+        squirrel.blinkLeftEye { [weak self] in
+            guard let self else { return }
+            self.isIdleAnimating = false
+            self.applyIdlePause()
+            self.scheduleBlink()
+        }
     }
 
     // ── Idle nudge (every 12–22 s, tiny shift so it doesn't look frozen) ──
@@ -191,6 +196,7 @@ class AnimationManager {
         guard !isReminderJumping else { return }
         isReminderJumping = true
         stopIdleChains()
+        cancelIdleAnimation()
         squirrel.wholeNode.removeAllActions()
         runReminderJumpCycle()
     }
@@ -199,6 +205,7 @@ class AnimationManager {
         guard isReminderJumping else { return }
         isReminderJumping = false
         squirrel.wholeNode.removeAllActions()
+        cancelIdleAnimation()
         if !isPausedState { startIdleChains() }
     }
 
@@ -220,6 +227,7 @@ class AnimationManager {
         guard !isActionPlaying, !isReminderJumping, !isPausedState else { return }
         isActionPlaying = true
         stopIdleChains()
+        cancelIdleAnimation()
 
         let node = squirrel.wholeNode
         let rise = SKAction.moveBy(x: 0, y: 9, duration: 0.5)
@@ -254,6 +262,7 @@ class AnimationManager {
         isPausedState.toggle()
         if isPausedState {
             stopIdleChains()
+            cancelIdleAnimation()
             squirrel.wholeNode.isPaused = true
         } else {
             squirrel.wholeNode.isPaused = false

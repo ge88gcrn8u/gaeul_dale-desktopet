@@ -45,6 +45,14 @@ else
     echo "   ⚠️  squirrel.png not found — place it in project root"
 fi
 
+# ── Left-eye eyelid overlay (blink) ──
+if [ -f "$PROJECT_DIR/eyelid.png" ]; then
+    cp "$PROJECT_DIR/eyelid.png" "$RESOURCES_DIR/eyelid.png"
+    echo "   ✅ eyelid.png"
+else
+    echo "   ⚠️  eyelid.png not found — skipping left-eye blink overlay"
+fi
+
 # ── App Icon (.icns) ──
 if [ -f "$PROJECT_DIR/AppIcon.png" ]; then
     echo "   Generating AppIcon.icns…"
