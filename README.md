@@ -165,8 +165,8 @@ let sprite = SKSpriteNode(texture: texture)
 
 ### 眨眼
 
-DAL-E 现在会**左眼眨眼**（慵懒 wink）：由 `eyelid.png` 眼皮遮罩驱动，颜色与脸部融合、闭合时带睫毛弧线。
-想改成两只眼一起眨，在 `SquirrelNode.swift` 里给右眼加一片镜像眼皮即可（`attachLeftEyelid` 的右眼版本）。
+DAL-E 慵懒 wink：由 `eyelid.png` 眼皮遮罩驱动，颜色与脸部融合、闭合时带睫毛弧线。
+想改成两只眼一起眨（闭眼），在 `SquirrelNode.swift` 里给右眼加一片镜像眼皮即可（`attachLeftEyelid` 的右眼版本）。
 
 ## 技术细节
 
