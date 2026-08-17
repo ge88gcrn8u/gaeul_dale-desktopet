@@ -17,7 +17,7 @@
 - **MINIVE 系列**：每位成员都有自己的对应角色——安宥真 GANGANJI、秋天 DAL-E、Rei NAORI、张员瑛 CHERRY、LIZ CHEEZ、Leeseo ERANG-E
 - **性格特点**：This squirrel character has a calm and thoughtful nature. Like the name Gaeul (meaning Autumn), it carries a peaceful, mature, and mentally strong atmosphere. #CALM #THOUGHTFUL #SQUIRREL #AUTUMN (https://linefriends.com/en/characters-list/ip-minive-minini?utm_source)
 
-这个桌面宠物，就是把「Gaeul的小松鼠 DAL-E」带到你的 macOS 桌面上，陪你工作、记提醒、一起度过每一天。
+这个桌面宠物，就是把「**DAL-E**」带到你的 macOS 桌面上，陪你工作、记提醒、一起度过每一天。
 
 ## ✨ 功能特点
 
